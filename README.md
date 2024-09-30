@@ -9,7 +9,9 @@ The repository contains python code for comparing the rating estimator and the a
 
 * rating_estimator.py takes in a matrix of ratings as a .csv file and outputs .csv files for average ratings, primitive ratings, and rating estimator ratings.
 
-* plot_ratings.py contains code to plot the average ratings, primitive ratings, and rating estimator ratings from their .csv files.
+* plot_ratings.py plots the average ratings, primitive ratings, and rating estimator ratings from their .csv files.
+
+* simulated_ratings.py applies the average and the rating estimator to simulated rating data and outputs a plot comparing the two results.
 
 ## Reference
 If you found this code helpful, please cite my paper introducing the rating estimator:
