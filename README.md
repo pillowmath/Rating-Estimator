@@ -11,7 +11,7 @@ The repository contains python code for comparing the rating estimator and the a
 
 * plot_ratings.py contains code to plot the average ratings, primitive ratings, and rating estimator ratings from their .csv files
 
-##Reference
+## Reference
 If you found this code helpful, please cite my paper introducing the rating estimator:
 
 Daniel Raban. "How should we aggregate ratings? Accounting for personal rating scales via Wasserstein barycenters"
