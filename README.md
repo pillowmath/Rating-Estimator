@@ -15,6 +15,8 @@ The repository contains python code for comparing the rating estimator and the a
 
 * calc_top_n_utility.py takes in the .csv files for the average and rating estimator ratings and calculates the utility associated to the top n items in each ranking, for various notions of utility.
 
+* avg_change_in_rank.py takes in the .csv files for the average, rating estimator ratings, and BTL Markov chain rankings and calculates the normalized average change in ranking between the different ranked lists obtained from the ratings.
+
 * simulated_ratings.py applies the average and the rating estimator to simulated rating data and outputs a plot comparing the two results.
 
 ## Reference
