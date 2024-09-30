@@ -11,6 +11,8 @@ The repository contains python code for comparing the rating estimator and the a
 
 * plot_ratings.py plots the average ratings, primitive ratings, and rating estimator ratings from their .csv files.
 
+* kendall_w.py calculates two statistics, analogues of Kendall's W, which represent the degree of inter-rater agreement in personal rating scales and in overall rating profiles. These are numbers between 0 and 1 (0 meaning no agreement, 1 meaning perfect agreement).
+
 * simulated_ratings.py applies the average and the rating estimator to simulated rating data and outputs a plot comparing the two results.
 
 ## Reference
