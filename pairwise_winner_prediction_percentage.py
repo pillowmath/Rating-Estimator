@@ -5,7 +5,7 @@ from itertools import product
 #Read in the average ratings, rating estimator ratings, BTL rankings, and counts for pairwise winners
 pairwise_counts = pd.read_csv('pairwise_counts.csv',index_col = 0)
 average_ratings = pd.read_csv('average_ratings.csv',index_col = 0)
-aggregate_ratings = pd.read_csv('target_ratings_revised.csv',index_col = 0)
+aggregate_ratings = pd.read_csv('rating_estimator_ratings.csv',index_col = 0)
 btl_ratings = pd.read_csv('stat_dist.csv',index_col = 0)
 
 number_of_items = 0
