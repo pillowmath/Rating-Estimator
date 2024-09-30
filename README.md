@@ -17,6 +17,8 @@ The repository contains python code for comparing the rating estimator and the a
 
 * avg_change_in_rank.py takes in the .csv files for the average, rating estimator ratings, and BTL Markov chain rankings and calculates the normalized average change in ranking between the different ranked lists obtained from the ratings.
 
+* pairwise_winner_prediction_percentage.py takes in the .csv files for the average, rating estimator ratings, BTL Markov chain rankings, and a matrix of counts for pairwise winners and calculates how often each ranking aligns with the majority winner in pairwise comparisons.
+
 * simulated_ratings.py applies the average and the rating estimator to simulated rating data and outputs a plot comparing the two results.
 
 ## Reference
