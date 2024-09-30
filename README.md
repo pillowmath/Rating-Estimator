@@ -7,3 +7,10 @@ The repository contains python code for comparing the rating estimator and the a
 * create_rating_matrix.py takes the linked dataset and outputs a .csv file containing a matrix of ratings.
 
 * rating_estimator.py takes in a matrix of ratings as a .csv file and outputs .csv files for average ratings, primitive ratings, and rating estimator ratings.
+
+* plot_ratings.py contains code to plot the average ratings, primitive ratings, and rating estimator ratings from their .csv files
+
+
+If you found this code helpful, please cite my paper introducing the rating estimator:
+
+Daniel Raban. "How should we aggregate ratings? Accounting for personal rating scales via Wasserstein barycenters"
