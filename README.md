@@ -5,13 +5,15 @@ This repository provides an implementation of the rating estimator, a new method
 The repository contains python code for comparing the rating estimator and the average on the following dataset: https://www.kaggle.com/datasets/azathoth42/myanimelist. You can download the dataset and run the calculations yourself, or you can read in your own dataset. The main file for calculating the rating estimator given a matrix of ratings is rating_estimator.py.
 
 ## Files
-* create_rating_matrix.py takes the linked dataset and outputs a .csv file containing a matrix of ratings.
+* create_ratings_matrix.py takes the linked dataset and outputs a .csv file containing a matrix of ratings.
 
 * rating_estimator.py takes in a matrix of ratings as a .csv file and outputs .csv files for average ratings, primitive ratings, and rating estimator ratings.
 
 * plot_ratings.py plots the average ratings, primitive ratings, and rating estimator ratings from their .csv files.
 
 * kendall_w.py calculates two statistics, analogues of Kendall's W, which represent the degree of inter-rater agreement in personal rating scales and in overall rating profiles. These are numbers between 0 and 1 (0 meaning no agreement, 1 meaning perfect agreement).
+
+* calc_top_n_utility.py takes in the .csv files for the average and rating estimator ratings and calculates the utility associated to the top n items in each ranking, for various notions of utility.
 
 * simulated_ratings.py applies the average and the rating estimator to simulated rating data and outputs a plot comparing the two results.
 
