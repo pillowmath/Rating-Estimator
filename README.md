@@ -15,6 +15,10 @@ The repository contains python code for comparing the rating estimator and the a
 
 * calc_top_n_utility.py takes in the .csv files for the average and rating estimator ratings and calculates the utility associated to the top n items in each ranking, for various notions of utility.
 
+* create_pairwise_counts.py takes in the matrix of ratings and returns a matrix containing a count of how many times item i beat item j in pairwise comparisons (i.e. when both rated by the same rater).
+
+* calc_btl_ranking.py takes in the matrix of pairwise counts and calculates the BTL ranking for the items using the BTL Markov chain estimator.
+
 * avg_change_in_rank.py takes in the .csv files for the average, rating estimator ratings, and BTL Markov chain rankings and calculates the normalized average change in ranking between the different ranked lists obtained from the ratings.
 
 * pairwise_winner_prediction_percentage.py takes in the .csv files for the average, rating estimator ratings, BTL Markov chain rankings, and a matrix of counts for pairwise winners and calculates how often each ranking aligns with the majority winner in pairwise comparisons.
