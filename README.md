@@ -28,4 +28,4 @@ The repository contains python code for comparing the rating estimator and the a
 ## Reference
 If you found this code helpful, please cite my paper introducing the rating estimator:
 
-Daniel Raban. "How should we aggregate ratings? Accounting for personal rating scales via Wasserstein barycenters"
+Daniel Raban. "How should we aggregate ratings? Accounting for personal rating scales via Wasserstein barycenters" ([Arxiv preprint](https://arxiv.org/abs/2410.00865))
