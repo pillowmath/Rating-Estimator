@@ -45,7 +45,7 @@ primitive_rating_list["value"] = primitive_rating_list.index
 primitive_rating_list["value"] = primitive_rating_list["value"].apply(lambda x: primitive_rating(x,barycenter))
 
 sorted_primitive_rating_list = np.sort(np.array(primitive_rating_list["value"]))
-aggregate_rating_list = primitive_rating_list["value"].apply(lambda x: aggregate_rating(x,sorted_primitive_rating_list,barycenter))
+rating_estimator_rating_list = primitive_rating_list["value"].apply(lambda x: aggregate_rating(x,sorted_primitive_rating_list,barycenter))
 
 
 #Save the average ratings, primitive ratings, and rating estimator ratings to csv files
