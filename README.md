@@ -7,7 +7,7 @@ The repository contains python code for comparing the rating estimator and the a
 ## Files
 * create_ratings_matrix.py takes the linked dataset and outputs a .csv file containing a matrix of ratings.
 
-* rating_estimator.py takes in a matrix of ratings as a .csv file and outputs .csv files for average ratings, primitive ratings, and rating estimator ratings.
+* rating_estimator.py takes in a matrix of ratings (with raters as rows and items as columns) as a .csv file and outputs .csv files for average ratings, primitive ratings, and rating estimator ratings.
 
 * plot_ratings.py plots the average ratings, primitive ratings, and rating estimator ratings from their .csv files.
 
