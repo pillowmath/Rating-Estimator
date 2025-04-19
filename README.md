@@ -29,3 +29,10 @@ The repository contains python code for comparing the rating estimator and the a
 If you found this code helpful, please cite my paper introducing the rating estimator:
 
 Daniel Raban. "How should we aggregate ratings? Accounting for personal rating scales via Wasserstein barycenters" ([Arxiv preprint](https://arxiv.org/abs/2410.00865))
+
+@article{raban2024should,
+  title={How should we aggregate ratings? Accounting for personal rating scales via Wasserstein barycenters},
+  author={Raban, Daniel},
+  journal={arXiv preprint arXiv:2410.00865},
+  year={2024}
+}
