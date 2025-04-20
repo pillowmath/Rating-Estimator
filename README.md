@@ -2,12 +2,16 @@
 This repository provides an implementation of the [rating estimator](https://arxiv.org/abs/2410.00865), a new method of averaging ratings that accounts for raters' differing personal rating scales. The method is inspired by the notion of Wasserstein barycenters in optimal transport. See [here](https://pillowmath.github.io/Ratings/the-problem-with-averaging-ratings.html) for easy-to-understand explanations of why we need a new method of averaging ratings and how the rating estimator works.
 
 ## Usage
-The repository contains python code for comparing the rating estimator and the average on the following dataset: https://www.kaggle.com/datasets/azathoth42/myanimelist. You can download the dataset and run the calculations yourself, or you can read in your own dataset. The main file for calculating the rating estimator given a matrix of ratings (with raters as rows and items as columns) is rating_estimator.py.
+The repository contains python code for calculating the rating estimator and comparing it to average ratings for the following dataset (https://www.kaggle.com/datasets/azathoth42/myanimelist) or on your own rating data.
+
+You can download the dataset and run the calculations yourself, or you can read in your own dataset. The main file for calculating the rating estimator is rating_estimator.py; you just need a matrix of ratings (with raters as rows and items as columns)! For very large datasets, where the rating matrix may not fit into memory, use rating_estimator_sparse.py, which uses SciPy sparse matrix formats to compute the rating estimator; for this file, you just need a matrix of ratings as an .npz file and a .csv file listing of your item ids (in the same order as the columns of your matrix).
 
 ## Files
 * create_ratings_matrix.py takes the linked dataset and outputs a .csv file containing a matrix of ratings.
 
 * rating_estimator.py takes in a matrix of ratings (with raters as rows and items as columns) as a .csv file and outputs .csv files for average ratings, primitive ratings, and rating estimator ratings.
+
+* rating_estimator_sparse.py takes in a sparse matrix of ratings (with raters as rows and items as columns) as a .npz file and a list of item ids as a .csv file and outputs .csv files for average ratings, primitive ratings, and rating estimator ratings.
 
 * plot_ratings.py plots the average ratings, primitive ratings, and rating estimator ratings from their .csv files.
 
