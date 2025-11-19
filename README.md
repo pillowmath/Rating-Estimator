@@ -9,7 +9,7 @@ You can download the dataset and run the calculations yourself, or you can read 
 For very large datasets, where the rating matrix may not fit into memory, use rating_estimator_sparse.py, which uses SciPy sparse matrix formats to compute the rating estimator; for this file, you just need a matrix of ratings as an .npz file and a .csv file listing of your item ids (in the same order as the columns of your matrix).
 
 ## Files
-* create_ratings_matrix.py takes the linked dataset and outputs a .csv file containing a matrix of ratings.
+* The files in the "Build Rating Matrix" folder take in various datasets and convert the raw data into a matrix (or sparse matrix) of ratings, where the rows are raters and the columns are items.
 
 * rating_estimator.py takes in a matrix of ratings (with raters as rows and items as columns) as a .csv file and outputs .csv files for average ratings, primitive ratings, and rating estimator ratings.
 
@@ -19,17 +19,15 @@ For very large datasets, where the rating matrix may not fit into memory, use ra
 
 * kendall_w.py calculates two statistics, analogues of Kendall's W, which represent the degree of inter-rater agreement in personal rating scales and in overall rating profiles. These are numbers between 0 and 1 (0 meaning no agreement, 1 meaning perfect agreement).
 
-* calc_top_n_utility.py takes in the .csv files for the average and rating estimator ratings and calculates the utility associated to the top n items in each ranking, for various notions of utility.
+* kendall_w_sparse.py is the same as kendall_w.py, except it takes in a sparse matrix (.npz) instead of a dense matrix (.csv).
 
-* create_pairwise_counts.py takes in the matrix of ratings and returns a matrix containing a count of how many times item i beat item j in pairwise comparisons (i.e. when both rated by the same rater).
+* prediction_comparison.py takes in a rating matrix (.csv) and compares the performance the mean vs the rating estimator on a task of predicting user ratings.
 
-* calc_btl_ranking.py takes in the matrix of pairwise counts and calculates the BTL ranking for the items using the BTL Markov chain estimator.
+* prediction_comparison_sparse.py takes in a sparse rating matrix (.npz) and compares the performance the mean vs the rating estimator on a task of predicting user ratings.
 
-* avg_change_in_rank.py takes in the .csv files for the average, rating estimator ratings, and BTL Markov chain rankings and calculates the normalized average change in ranking between the different ranked lists obtained from the ratings.
+* scale_and_reverse_simulation.py applies the average and the rating estimator to simulated rating data from a "scale and reverse" model and outputs a plot comparing the two results.
 
-* pairwise_winner_prediction_percentage.py takes in the .csv files for the average, rating estimator ratings, BTL Markov chain rankings, and a matrix of counts for pairwise winners and calculates how often each ranking aligns with the majority winner in pairwise comparisons.
-
-* simulated_ratings.py applies the average and the rating estimator to simulated rating data and outputs a plot comparing the two results.
+* quality_plus_noise_simulation.py applies the average and the rating estimator to simulated rating data from a "quality plus noise" model and outputs a plot comparing the two results.
 
 ## Reference
 If you found this code helpful, please cite my paper introducing the rating estimator:
