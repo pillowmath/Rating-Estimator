@@ -4,10 +4,7 @@ from scipy.sparse import load_npz
 
 #Load sparse matrix and item index.
 sparse_matrix = load_npz("rating_matrix.npz")
-item_index = pd.read_csv("business_index.csv", index_col=0).squeeze("columns")
-
-#Create mapping from item_id to column index.
-item_id_to_col = {item_id: i for i, item_id in enumerate(item_index.index)}
+item_index = pd.read_csv("item_index.csv", index_col=0).squeeze("columns")
 
 #Convert the matrix rows to sorted arrays of ratings for each rater.
 row_values = [np.sort(sparse_matrix.data[sparse_matrix.indptr[i]:sparse_matrix.indptr[i + 1]].copy()) for i in range(sparse_matrix.shape[0])]
@@ -31,15 +28,32 @@ def cdf_to_avg_inverse_cdf(input_id,input_value,barycenter_dist):
     return barycenter_dist[index]
 
 
-#This method calculates the primitive rating R0 of an item. Since not every user has rated every item, we need to first restrict to the users who have rated the given item.
-def primitive_rating(item_id,barycenter_dist):
-    # Convert to COO format for faster iteration
-    col = sparse_matrix[:, item_id].tocoo()
-    relevant_ratings = [(user_id, rating) for user_id, rating in zip(col.row, col.data)]
-    transformed_ratings = [cdf_to_avg_inverse_cdf(user_id, rating, barycenter_dist) for user_id, rating in relevant_ratings]
-    return np.mean(transformed_ratings)
+#This method calculates the primitive rating R0 of all items in one row-wise pass through the sparse matrix.
+def calculate_primitive_ratings(barycenter_dist):
+    num_items = sparse_matrix.shape[1]
+
+    #Running sums and counts for each item.
+    item_sums = np.zeros(num_items, dtype=float)
+    item_counts = np.zeros(num_items, dtype=int)
+
+    #CSR matrices are stored by row, so process one user at a time.
+    for user_id in range(sparse_matrix.shape[0]):
+        start = sparse_matrix.indptr[user_id]
+        end = sparse_matrix.indptr[user_id + 1]
+
+        item_ids = sparse_matrix.indices[start:end]
+        ratings = sparse_matrix.data[start:end]
+
+        for item_id, rating in zip(item_ids, ratings):
+            transformed_rating = cdf_to_avg_inverse_cdf(user_id, rating, barycenter_dist)
+            
+            item_sums[item_id] += transformed_rating
+            item_counts[item_id] += 1
+
+    #Calculate the mean transformed rating for each item.
+    return np.divide(item_sums, item_counts, out=np.zeros_like(item_sums, dtype=float), where=item_counts != 0)
     
-#This method alculate the rating estimator scores of every item
+#This method calculates the rating estimator scores of every item
 def aggregate_rating(primitive_rating,primitive_rating_list,barycenter_dist):
     input_cdf_value = np.divide(np.searchsorted(primitive_rating_list,primitive_rating,side = "right"),len(primitive_rating_list))
     return barycenter_dist[int(input_cdf_value*2 * sparse_matrix.shape[1])-1]
@@ -48,7 +62,7 @@ def aggregate_rating(primitive_rating,primitive_rating_list,barycenter_dist):
 barycenter = calculate_barycenter(row_values)
 
 #Create a list of primitive ratings (one for each item). Then record a version of it, sorted in increasing order.
-primitive_ratings = pd.Series([primitive_rating(item_id_to_col[item_id], barycenter) for item_id in item_index.index],index=item_index.index)
+primitive_ratings = pd.Series(calculate_primitive_ratings(barycenter), index=item_index.index)
 sorted_primitive_values = np.sort(primitive_ratings.values)
 
 #Calculate the rating estimator using aggregate_rating.
