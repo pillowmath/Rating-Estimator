@@ -29,6 +29,9 @@ For very large datasets, where the rating matrix may not fit into memory, use ra
 
 * quality_plus_noise_simulation.py applies the average and the rating estimator to simulated rating data from a "quality plus noise" model and outputs a plot comparing the two results.
 
+* quality_plus_noise_simu_structured_missingness.py applies the average and the rating estimator to simulated rating data from a "quality plus noise" model with various choices of structured missingness in the data and outputs a plot comparing the two results.
+
+
 ## Reference
 If you found this code helpful, please cite my paper introducing the rating estimator:
 
