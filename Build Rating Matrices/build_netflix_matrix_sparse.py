@@ -31,6 +31,10 @@ OUT_MOVIE_INDEX = "movie_index.csv"
 # ===================================
 
 
+# Function: iter_combined_data
+# Inputs: data_dir: directory holding Netflix combined_data_*.txt files.
+# Outputs: Generator yielding (user_id, movie_id, integer rating) triplets.
+# Assumptions: Lines follow Netflix Prize header and rating layout; ID and rating fields are parseable integers.
 def iter_combined_data(data_dir):
     """
     Iterate over all combined_data_*.txt files in data_dir and yield (user_id, movie_id, rating).
@@ -78,6 +82,10 @@ def iter_combined_data(data_dir):
                 yield user_id, movie_id, rating
 
 
+# Function: collect_unique_ids
+# Inputs: data_dir: Netflix source directory.
+# Outputs: Pair of sorted unique user-ID and movie-ID lists.
+# Assumptions: At least one combined_data file exists and is readable.
 def collect_unique_ids(data_dir):
     """
     One pass through combined_data files to collect all distinct user_ids and movie_ids.
@@ -94,6 +102,10 @@ def collect_unique_ids(data_dir):
     return users, movies
 
 
+# Function: build_sparse_matrix
+# Inputs: data_dir: Netflix source directory; users, movies: full unique ID lists.
+# Outputs: SciPy CSR user-by-movie rating matrix.
+# Assumptions: One observed rating per user-movie pair; input lists include every seen ID.
 def build_sparse_matrix(data_dir, users, movies):
     """
     Build a COO sparse matrix from Netflix ratings, then convert to CSR.
@@ -128,6 +140,10 @@ def build_sparse_matrix(data_dir, users, movies):
     return csr
 
 
+# Function: write_index_csv
+# Inputs: ids: ordered ID sequence; path: CSV destination; header_name: second column label.
+# Outputs: Writes CSV mapping integer matrix indices to original IDs; returns None.
+# Assumptions: Output destination is writable.
 def write_index_csv(ids, path, header_name):
     """
     Write a CSV mapping:
@@ -142,6 +158,10 @@ def write_index_csv(ids, path, header_name):
             w.writerow([idx, _id])
 
 
+# Function: main
+# Inputs: No explicit arguments; reads DATA_DIR and output filename constants.
+# Outputs: Saves CSR NPZ and the user/move index files.
+# Assumptions: Raw Netflix files exist in DATA_DIR and outputs can be created.
 def main():
     print("Collecting unique user and movie IDs...")
     users, movies = collect_unique_ids(DATA_DIR)

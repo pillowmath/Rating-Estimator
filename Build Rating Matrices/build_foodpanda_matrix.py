@@ -9,6 +9,10 @@ df = pd.read_csv('BDFoodSent-334k.csv')
 df['ratings'] = df['ratings'].apply(ast.literal_eval)
 
 # Define a function to extract the restaurant_food score
+# Function: get_restaurant_score
+# Inputs: rating_list: list of dictionaries including topic and score.
+# Outputs: Score for topic restaurant_food, or None if absent.
+# Assumptions: Input originated from parsed Foodpanda ratings field and each element has a topic key.
 def get_restaurant_score(rating_list):
     for item in rating_list:
         if item['topic'] == 'restaurant_food':

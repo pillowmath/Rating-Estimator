@@ -46,6 +46,10 @@ MIN_RATINGS_PER_USER       = 15
 # ===================================
 
 
+# Function: iter_json_lines
+# Inputs: path: path to a newline-delimited JSON file.
+# Outputs: Generator of parsed JSON dictionaries.
+# Assumptions: Each nonblank line is a well-formed JSON object.
 def iter_json_lines(path):
     """Yield parsed JSON objects from a newline-delimited JSON file."""
     with open(path, "r", encoding="utf-8") as f:
@@ -56,6 +60,10 @@ def iter_json_lines(path):
             yield json.loads(line)
 
 
+# Function: collect_restaurant_business_ids
+# Inputs: No arguments; reads BUSINESS_JSON and filtering configuration constants.
+# Outputs: Sorted list of Yelp business IDs identified as restaurants.
+# Assumptions: Yelp business JSON is readable; restaurant detection uses keyword matching.
 def collect_restaurant_business_ids():
     """
     Scan business.json to collect business_ids that look like restaurants.
@@ -97,6 +105,10 @@ def collect_restaurant_business_ids():
     return restaurant_ids
 
 
+# Function: build_sparse_matrix
+# Inputs: restaurant_ids: selected Yelp restaurant business IDs.
+# Outputs: Tuple (CSR rating matrix, user IDs, business IDs).
+# Assumptions: Review data and selected restaurant IDs share the same identifier scheme; duplicate reviews are averaged.
 def build_sparse_matrix(restaurant_ids):
     """
     Build a sparse matrix from Yelp reviews restricted to restaurant_ids.
@@ -193,6 +205,10 @@ def build_sparse_matrix(restaurant_ids):
 
 
 # <<< NEW: filtering function >>>
+# Function: filter_by_min_counts
+# Inputs: csr: user-by-restaurant CSR matrix; user_ids, restaurant_ids: aligned ID lists.
+# Outputs: Filtered CSR matrix and the corresponding retained user and restaurant IDs.
+# Assumptions: Counts refer to stored entries; threshold constants determine filtering.
 def filter_by_min_counts(csr, user_ids, restaurant_ids):
     """
     First drop restaurants (columns) with < MIN_RATINGS_PER_RESTAURANT ratings.
@@ -245,6 +261,10 @@ def filter_by_min_counts(csr, user_ids, restaurant_ids):
 # <<< END NEW >>>
 
 
+# Function: write_index_csv
+# Inputs: ids: ordered ID list; path: output filename; header_name: ID-column label.
+# Outputs: Writes numeric matrix index to original ID CSV; returns None.
+# Assumptions: Output folder is writable.
 def write_index_csv(ids, path, header_name):
     """
     Write a CSV mapping:
@@ -260,6 +280,10 @@ def write_index_csv(ids, path, header_name):
             w.writerow([idx, _id])
 
 
+# Function: write_dense_matrix_csv
+# Inputs: csr: filtered sparse matrix; users, businesses: aligned identifiers; path: output filename.
+# Outputs: Writes full dense CSV and returns None.
+# Assumptions: Matrix fits in memory; unobserved CSR entries are represented consistently in CSV.
 def write_dense_matrix_csv(csr, users, businesses, path):
     """
     Write a dense CSV rating matrix:
@@ -296,6 +320,10 @@ def write_dense_matrix_csv(csr, users, businesses, path):
     print("\nFinished writing dense CSV.")
 
 
+# Function: main
+# Inputs: No explicit inputs; reads Yelp file path and output setting constants.
+# Outputs: Writes filtered sparse NPZ, index CSVs, and optional dense CSV.
+# Assumptions: Raw Yelp files exist and writable storage is available.
 def main():
     # 1. Collect restaurant business_ids
     restaurant_ids = collect_restaurant_business_ids()
