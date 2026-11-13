@@ -14,6 +14,10 @@ random_flippings = 2 * np.random.binomial(n = 1,p = 0.75,size = num_raters) - 1
 random_coeffs = random_scalings * random_flippings
 
 #Calculate the W2 barycenter of raters' personal rating distributions
+# Function: calculate_barycenter
+# Inputs: matrix: current dense simulated user rating matrix; uses module-level matrix_array.
+# Outputs: Quantile-grid Wasserstein barycenter of simulated user rating distributions.
+# Assumptions: matrix_array is sorted and reflects the current matrix, each row containing data.
 def calculate_barycenter(matrix):
     # Preset the number of quantiles to be larger than the number of items
     num_quantiles = 50000
@@ -24,12 +28,20 @@ def calculate_barycenter(matrix):
 
 
 #The following method takes a user k and a rating value r and returns F_{hat mu}^{-1}(F_k(r)), where F_k is the CDF of user k's rating distribution and hat mu is the W2-barycenter of all users' personal rating distributions.   
+# Function: cdf_to_avg_inverse_cdf
+# Inputs: input_id: user index; input_value: simulated rating; barycenter_dist: barycenter quantile array.
+# Outputs: Scalar simulated rating moved to consensus quantile scale.
+# Assumptions: User has a nonempty sorted row and the barycenter uses a fixed 50,000-point grid.
 def cdf_to_avg_inverse_cdf(input_id,input_value,barycenter_dist):
     input_cdf_value = np.divide(np.searchsorted(matrix_array.loc[input_id],input_value,side = "right"),len(matrix_array.loc[input_id]))
     return barycenter_dist[int(input_cdf_value*50000)-1]
 
 
 #This method calculates the primitive rating R0 of an item. Since not every user has rated every item, we need to first restrict to the users who have rated the given item.
+# Function: primitive_rating
+# Inputs: item_id: simulation item column; barycenter_dist: quantile-grid array.
+# Outputs: Scalar primitive rating for one simulated item.
+# Assumptions: Module-level user_rating_matrix and matrix_array refer to the same simulation stage.
 def primitive_rating(item_id,barycenter_dist):
     relevant_ratings = pd.DataFrame(user_rating_matrix.loc[:,item_id].dropna())
     relevant_ratings['index'] = relevant_ratings.index
@@ -37,6 +49,10 @@ def primitive_rating(item_id,barycenter_dist):
     return np.mean(relevant_ratings.loc[:,"value"])
     
 #Calculate the rating estimator ratings of every item
+# Function: aggregate_rating
+# Inputs: primitive_rating: simulated primitive item score; primitive_rating_list: sorted item scores; barycenter_dist: quantile grid.
+# Outputs: Scalar final rating on consensus rating scale.
+# Assumptions: Primitive scores are sorted and nonempty.
 def aggregate_rating(primitive_rating,primitive_rating_list,barycenter_dist):
     input_cdf_value = np.divide(np.searchsorted(primitive_rating_list,primitive_rating,side = "right"),len(primitive_rating_list))
     return barycenter_dist[int(input_cdf_value*50000)-1]

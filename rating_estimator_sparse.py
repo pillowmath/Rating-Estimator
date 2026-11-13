@@ -10,6 +10,10 @@ item_index = pd.read_csv("item_index.csv", index_col=0).squeeze("columns")
 row_values = [np.sort(sparse_matrix.data[sparse_matrix.indptr[i]:sparse_matrix.indptr[i + 1]].copy()) for i in range(sparse_matrix.shape[0])]
 
 #This method calculate the W2 barycenter of raters' personal rating distributions.
+# Function: calculate_barycenter
+# Inputs: matrix: unused nominal argument; function reads module-level row_values and sparse_matrix.
+# Outputs: Array of averaged quantiles, length twice the number of items.
+# Assumptions: CSR matrix is loaded and each user row has at least one stored rating.
 def calculate_barycenter(matrix):
     #Preset the number of quantiles to be larger than the number of items
     num_quantiles = 2 * sparse_matrix.shape[1]
@@ -21,6 +25,10 @@ def calculate_barycenter(matrix):
 
 
 #The following method takes a user k and a rating value r and returns F_{hat mu}^{-1}(F_k(r)), where F_k is the CDF of user k's rating distribution and hat mu is the W2-barycenter of all users' personal rating distributions.   
+# Function: cdf_to_avg_inverse_cdf
+# Inputs: input_id: integer CSR row; input_value: observed rating; barycenter_dist: quantile array.
+# Outputs: Scalar barycenter-scale rating.
+# Assumptions: Row contains at least one stored rating; zeros encode missing data rather than observed zeros.
 def cdf_to_avg_inverse_cdf(input_id,input_value,barycenter_dist):
     row = row_values[input_id]
     input_cdf_value = np.divide(np.searchsorted(row,input_value,side = "right"),len(row))
@@ -29,6 +37,10 @@ def cdf_to_avg_inverse_cdf(input_id,input_value,barycenter_dist):
 
 
 #This method calculates the primitive rating R0 of all items in one row-wise pass through the sparse matrix.
+# Function: calculate_primitive_ratings
+# Inputs: barycenter_dist: barycenter quantile array; uses module-level sparse_matrix.
+# Outputs: Array of primitive scores, one value per item.
+# Assumptions: CSR indices and row_values describe the same matrix; items with no rating are assigned zero by this implementation.
 def calculate_primitive_ratings(barycenter_dist):
     num_items = sparse_matrix.shape[1]
 
@@ -54,6 +66,10 @@ def calculate_primitive_ratings(barycenter_dist):
     return np.divide(item_sums, item_counts, out=np.zeros_like(item_sums, dtype=float), where=item_counts != 0)
     
 #This method calculates the rating estimator scores of every item
+# Function: aggregate_rating
+# Inputs: primitive_rating: item score; primitive_rating_list: sorted primitive scores; barycenter_dist: quantile array.
+# Outputs: Final monotone-rescaled scalar rating.
+# Assumptions: Scores are sorted, barycenter grid is compatible with the same matrix.
 def aggregate_rating(primitive_rating,primitive_rating_list,barycenter_dist):
     input_cdf_value = np.divide(np.searchsorted(primitive_rating_list,primitive_rating,side = "right"),len(primitive_rating_list))
     return barycenter_dist[int(input_cdf_value*2 * sparse_matrix.shape[1])-1]

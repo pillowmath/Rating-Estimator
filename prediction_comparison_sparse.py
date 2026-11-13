@@ -11,6 +11,10 @@ pd.set_option('display.precision', 6)
 
 # ============ Right-continuous quantile helpers ============
 
+# Function: rcq_sorted
+# Inputs: sorted_samples: ascending sample array; qs: array of quantiles.
+# Outputs: Array of empirical quantile values or NaNs when input is empty.
+# Assumptions: Quantiles are in [0,1], with the sample representing observed ratings.
 def rcq_sorted(sorted_samples: np.ndarray, qs: np.ndarray) -> np.ndarray:
     """Right-continuous inverse CDF for a pre-sorted 1-D sample array."""
     n = sorted_samples.size
@@ -20,6 +24,10 @@ def rcq_sorted(sorted_samples: np.ndarray, qs: np.ndarray) -> np.ndarray:
     idx = np.clip(idx, 0, n - 1)
     return sorted_samples[idx]
 
+# Function: cdf_quantiles_from_scores_array
+# Inputs: scores: 1-D item-score array, with optional NaNs.
+# Outputs: Array of item quantiles with maximal ranks assigned to ties.
+# Assumptions: Scores and output positions refer to the same item indexing.
 def cdf_quantiles_from_scores_array(scores: np.ndarray) -> np.ndarray:
     """
     Right-continuous empirical CDF across items (ties take highest rank),
@@ -54,6 +62,10 @@ def cdf_quantiles_from_scores_array(scores: np.ndarray) -> np.ndarray:
 
 # ============ Methods on sparse matrices ============
 
+# Function: method_A_mean_csr
+# Inputs: R_train: sparse CSR ratings matrix.
+# Outputs: Array of per-item means with NaN for empty items.
+# Assumptions: Only stored CSR entries count as observed ratings; actual ratings of zero must not be stored.
 def method_A_mean_csr(R_train: csr_matrix) -> np.ndarray:
     """
     Item-wise mean over training raters for a CSR matrix.
@@ -67,6 +79,10 @@ def method_A_mean_csr(R_train: csr_matrix) -> np.ndarray:
         means[counts == 0] = np.nan
     return means
 
+# Function: compute_barycenter_quantiles_csr
+# Inputs: R_train: CSR training matrix.
+# Outputs: Tuple of barycenter quantile array, sorted user rating arrays, and grid size.
+# Assumptions: At least some users have stored ratings; implicit zeros represent missing entries.
 def compute_barycenter_quantiles_csr(R_train: csr_matrix):
     """
     Compute the W2-style barycenter on a K=2*#items grid using users'
@@ -110,6 +126,10 @@ def compute_barycenter_quantiles_csr(R_train: csr_matrix):
 
     return barycenter, user_arrays, K
 
+# Function: primitive_rating_scores_csr
+# Inputs: R_train: CSR training matrix.
+# Outputs: Array of primitive item scores with NaN for unobserved items.
+# Assumptions: CSR entries are exactly the observed nonzero ratings; each observed user has a rating array.
 def primitive_rating_scores_csr(R_train: csr_matrix) -> np.ndarray:
     """
     Method B: "primitive rating" scores from CSR matrix.
@@ -156,6 +176,10 @@ def primitive_rating_scores_csr(R_train: csr_matrix) -> np.ndarray:
 
     return scores
 
+# Function: method_C_random_rank
+# Inputs: n_items: number of items; seed: pseudorandom seed.
+# Outputs: Array of randomly permuted order-preserving surrogate scores.
+# Assumptions: Each item appears once; only ranks are used downstream.
 def method_C_random_rank(n_items: int, seed: int) -> np.ndarray:
     """
     Random ranking baseline: strictly increasing scores in random order.
@@ -170,6 +194,10 @@ def method_C_random_rank(n_items: int, seed: int) -> np.ndarray:
 
 # ============ CV evaluation on sparse matrix ============
 
+# Function: eval_quantiles_over_users_sparse
+# Inputs: user_cache: mapping from user ID to hidden items, visible sorted ratings, hidden truth; q_method: item quantile array.
+# Outputs: Counts, loss and squared-loss sums, and exact-match moments.
+# Assumptions: Test ratings were excluded from all training scores and visible-user quantiles.
 def eval_quantiles_over_users_sparse(user_cache, q_method: np.ndarray):
     """
     Pooled moments across all predictions (MAE, MSE, ExactMatch).
@@ -206,6 +234,10 @@ def eval_quantiles_over_users_sparse(user_cache, q_method: np.ndarray):
 
     return n_pred, mae_sum, mae_sumsq, mse_sum, mse_sumsq, match_sum, match_sumsq
 
+# Function: run_cross_validated_evaluation_sparse
+# Inputs: matrix_path: CSR NPZ input; n_splits: folds; hide_frac: held-out fraction; random_state: seed; random_reps: random baselines; max_users: optional subsampling.
+# Outputs: DataFrame of pooled cross-validated prediction accuracy and standard errors.
+# Assumptions: NPZ contains stored observations only, with no genuine zero ratings; enough users and ratings for CV.
 def run_cross_validated_evaluation_sparse(
     matrix_path: str = "rating_matrix.npz",
     n_splits: int = 5,
@@ -320,6 +352,10 @@ def run_cross_validated_evaluation_sparse(
             acc["em"]  += em;   acc["em2"]  += em2
 
     # ---- Convert accumulators to mean + SE ----
+    # Function: finalize
+    # Inputs: acc: pooled summary-statistic dictionary.
+    # Outputs: Means and SE of each accuracy metric plus number of predictions.
+    # Assumptions: Sample mean/SE computed by pooling individual predictions, not by taking fold-to-fold SD.
     def finalize(acc):
         n = acc["n"]
         if n == 0:

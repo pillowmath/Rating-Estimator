@@ -1,0 +1,6 @@
+# Versions transcribed from the submitted JASA Author Contributions Checklist;
+# not a claim that all full-dataset experiments were re-run in this environment.
+numpy==2.2.6
+pandas==2.3.3
+scipy==1.15.3
+matplotlib==3.10.9

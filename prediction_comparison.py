@@ -12,6 +12,10 @@ pd.set_option("display.precision", 6)
 # Quantile helpers
 # ============================================================
 
+# Function: rcq_sorted
+# Inputs: sorted_samples: ascending nonempty array; qs: quantiles in [0,1].
+# Outputs: Array of selected empirical quantile values.
+# Assumptions: sorted_samples is sorted ascending and nonempty; quantiles are valid.
 def rcq_sorted(sorted_samples: np.ndarray, qs: np.ndarray) -> np.ndarray:
     """
     Right-continuous inverse empirical CDF on a sorted sample.
@@ -34,6 +38,10 @@ def rcq_sorted(sorted_samples: np.ndarray, qs: np.ndarray) -> np.ndarray:
     return sorted_samples[idx]
 
 
+# Function: cdf_quantiles_from_scores
+# Inputs: scores: pandas Series of item scores, possibly with missing values.
+# Outputs: Series of item percentiles, with ties assigned their maximum ranks.
+# Assumptions: At least one score is nonmissing; same indexing is used for all methods.
 def cdf_quantiles_from_scores(scores: pd.Series) -> pd.Series:
     """
     Map item scores (e.g., means or primitive ratings) to right-continuous
@@ -55,6 +63,10 @@ def cdf_quantiles_from_scores(scores: pd.Series) -> pd.Series:
 # Methods A, B, C
 # ============================================================
 
+# Function: method_A_mean
+# Inputs: train_df: training-user-by-item matrix with NaN for unobserved ratings.
+# Outputs: Series of mean ratings, indexed by item.
+# Assumptions: Rows represent users and columns represent items.
 def method_A_mean(train_df: pd.DataFrame) -> pd.Series:
     """
     Method A: item-wise mean rating over training raters.
@@ -62,6 +74,10 @@ def method_A_mean(train_df: pd.DataFrame) -> pd.Series:
     return train_df.mean(axis=0, skipna=True)
 
 
+# Function: compute_barycenter_quantiles
+# Inputs: train_df: training rating matrix.
+# Outputs: Barycenter quantile array and per-user sorted ratings for subsequent score computation.
+# Assumptions: Users with ratings contribute empirical quantiles; missing entries are NaN.
 def compute_barycenter_quantiles(train_df: pd.DataFrame):
     """
     Compute W2-style barycenter of users' personal rating distributions.
@@ -106,6 +122,10 @@ def compute_barycenter_quantiles(train_df: pd.DataFrame):
     return barycenter, user_sorted_ratings, K
 
 
+# Function: primitive_rating_scores
+# Inputs: train_df: training user-by-item rating matrix.
+# Outputs: Item-indexed primitive rating scores.
+# Assumptions: The barycenter and user empirical distributions are computed from training ratings only.
 def primitive_rating_scores(train_df: pd.DataFrame) -> pd.Series:
     """
     Method B: primitive rating.
@@ -155,6 +175,10 @@ def primitive_rating_scores(train_df: pd.DataFrame) -> pd.Series:
     return primitive
 
 
+# Function: method_C_random_rank
+# Inputs: train_df: training matrix; seed: integer pseudorandom seed.
+# Outputs: Item-indexed scores in a random ranking.
+# Assumptions: Only score ordering, rather than its numeric range, is used in prediction.
 def method_C_random_rank(train_df: pd.DataFrame, seed: int) -> pd.Series:
     """
     Method C: random ranking of items.
@@ -176,6 +200,10 @@ def method_C_random_rank(train_df: pd.DataFrame, seed: int) -> pd.Series:
 # Evaluation over users: MAE, MSE, Exact Match
 # ============================================================
 
+# Function: eval_quantiles_over_users
+# Inputs: user_cache: held-out user ratings and hidden/visible masks; item_quantiles: per-item quantile Series.
+# Outputs: Pooled prediction counts and loss/match sums and second moments.
+# Assumptions: Held-out ratings were not used to construct item score rankings; quantiles align with item IDs.
 def eval_quantiles_over_users(user_cache, item_quantiles: pd.Series):
     """
     Evaluate one method (given by item quantiles) over all users in a fold.
@@ -239,6 +267,10 @@ def eval_quantiles_over_users(user_cache, item_quantiles: pd.Series):
 # Cross-validation driver
 # ============================================================
 
+# Function: run_cross_validated_evaluation
+# Inputs: n_splits: number of user folds; hide_frac: fraction of test ratings to hide; random_state: seed; random_reps: random-rank replicates.
+# Outputs: DataFrame of MAE, MSE, exact-match rate, SE, and sample counts by method.
+# Assumptions: rating_matrix.csv exists in working directory; enough raters/ratings exist to create the requested splits.
 def run_cross_validated_evaluation(
     n_splits: int = 5,
     hide_frac: float = 0.2,
@@ -350,6 +382,10 @@ def run_cross_validated_evaluation(
     # ------------------------------------------------------------
     # Turn raw sums into mean + SE across predictions.
     # ------------------------------------------------------------
+    # Function: finalize
+    # Inputs: acc: dictionary of pooled counts, first moments, and second moments.
+    # Outputs: Tuple containing mean and SE for each metric and sample count.
+    # Assumptions: Accumulators were created by run_cross_validated_evaluation; SE treats held-out rating errors as pooled observations.
     def finalize(acc):
         n = acc["n"]
         if n == 0:

@@ -88,6 +88,10 @@ rating_df = rating_df_per_user_rating_dependent
 
 
 #Calculate the W2 barycenter of raters' personal rating distributions
+# Function: calculate_barycenter
+# Inputs: matrix: dense user-item DataFrame; matrix_array: sorted arrays of nonmissing ratings per user.
+# Outputs: Mean quantile array with two points per item.
+# Assumptions: Each user contributing a row has an observed rating.
 def calculate_barycenter(matrix,matrix_array):
     #Preset the number of quantiles to be larger than the number of items
     num_quantiles = 2 * len(matrix.columns)
@@ -98,12 +102,20 @@ def calculate_barycenter(matrix,matrix_array):
 
 
 #The following method takes a user k and a rating value r and returns F_{hat mu}^{-1}(F_k(r)), where F_k is the CDF of user k's rating distribution and hat mu is the W2-barycenter of all users' personal rating distributions.   
+# Function: cdf_to_avg_inverse_cdf
+# Inputs: input_id: user index; input_value: observed rating; barycenter_dist: quantile array; matrix_array: sorted rows; rating_matrix: DataFrame.
+# Outputs: Scalar common-scale rating.
+# Assumptions: Sorted rows are derived from the same matrix, no row is empty.
 def cdf_to_avg_inverse_cdf(input_id,input_value,barycenter_dist,matrix_array,rating_matrix):
     input_cdf_value = np.divide(np.searchsorted(matrix_array.loc[input_id],input_value,side = "right"),len(matrix_array.loc[input_id]))
     return barycenter_dist[int(input_cdf_value*2 * len(rating_matrix.columns))-1]
 
 
 #This method calculates the primitive rating R0 of an item. Since not every user has rated every item, we need to first restrict to the users who have rated the given item.
+# Function: primitive_rating
+# Inputs: item_id: item column; barycenter_dist: quantile array; matrix_array: sorted rows; rating_matrix: DataFrame.
+# Outputs: Scalar primitive item rating.
+# Assumptions: At least one observation exists for the item.
 def primitive_rating(item_id,barycenter_dist,matrix_array,rating_matrix):
     relevant_ratings = pd.DataFrame(rating_matrix.loc[:,item_id].dropna())
     relevant_ratings['index'] = relevant_ratings.index
